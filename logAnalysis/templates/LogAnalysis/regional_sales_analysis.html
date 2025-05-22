@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SOLUTIONS Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+        }
+        
+        .navbar {
+            background-color: #1a73e8; /* Google blue */
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            height: 60px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-right: 40px;
+        }
+        
+        .tabs {
+            display: flex;
+            height: 100%;
+        }
+        
+        .tab {
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            height: 100%;
+            transition: background-color 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .tab.active {
+            background-color: rgba(255,255,255,0.2);
+            border-bottom: 3px solid white;
+        }
+        
+        .dashboard-container {
+            padding: 20px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">AI-SOLUTIONS</div>
+        <div class="tabs">
+            <a href="{% url 'dashboard1' %}">
+                <div class="tab">Overview</div>
+            </a>
+            <a href="{% url 'RegionalSalesAnalysis' %}">
+                <div class="tab active">Regional Sales</div>
+            </a>
+        </div>
+            <form action="{% url 'upload_logs' %}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 8px;">
+                {% csrf_token %}
+                <input type="file" name="log_file" accept=".txt" required style="padding: 5px;">
+                <button type="submit" style="padding: 6px 12px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Upload Logs
+                </button>
+            </form>
+    </nav>
+    
+    <div class="dashboard-container">
+        {% if messages %}
+        <div style="margin-top: 10px;">
+            {% for message in messages %}
+                <div style="padding: 10px; border-radius: 4px; margin-bottom: 10px;
+                            {% if message.tags == 'success' %}
+                                background-color: #d4edda; color: #155724;
+                            {% elif message.tags == 'error' %}
+                                background-color: #f8d7da; color: #721c24;
+                            {% elif message.tags == 'warning' %}
+                                background-color: #fff3cd; color: #856404;
+                            {% else %}
+                                background-color: #e2e3e5; color: #383d41;
+                            {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+        {% load plotly_dash %}
+        <div>
+        {% plotly_app name="SalesDashboard" ratio=1 %}
+        </div>
+    </div>
+
+    <script>
+        // Simple tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Here you would typically load the appropriate dashboard content
+                // For now we'll just log which tab was clicked
+                console.log(`Switched to ${this.textContent} tab`);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    color: #ddd;
+    display: flex;
+}
+
+.sidebar {
+    width: 60px;
+    height: 100vh;
+    background-color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #222;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+h1 {
+    text-transform: lowercase;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #292929;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #aaa;
+}
+
+.card p {
+    font-size: 22px;
+    margin: 5px 0 0;
+    font-weight: bold;
+}
+
+.charts {
+    display: flex;
+    justify-content: space-around; /* Ensures equal spacing */
+    align-items: flex-start; /* Aligns items to the top */
+    flex-wrap: wrap; /* Ensures responsiveness */
+    gap: 20px; /* Adds space between charts */
+}
+
+.chart {
+    flex: 1; /* Equal width for both charts */
+    max-width: 500px; /* Ensures charts don’t stretch too much */
+    height: 400px; /* Fixed height for consistency */
+    background: #f8f8f8; /* Optional: light background */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.chart-placeholder {
+    height: 200px;
+    background: #333;
+    border-radius: 4px;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+.chart {
+    width: 100%;
+    max-width: 600px; /* Adjust this as needed */
+    height: 400px; /* Set a fixed height */
+    margin: auto; /* Center the chart */
+    position: relative;
+}
+

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Server Log Analytics Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 200px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar h2 {
+            color: #ecf0f1;
+            font-size: 1.2rem;
+        }
+        
+        .nav-menu {
+            list-style-type: none;
+        }
+        
+        .nav-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-menu li:hover, .nav-menu li.active {
+            background-color: #34495e;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        
+        .dashboard-header h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-card {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            min-height: 80px;
+        }
+        
+        .metric-title {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 15px;
+            width: 100%;
+        }
+        .chart-full {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 20px;
+        }
+        .chart-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-title {
+            font-size: 1rem;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .chart-content {
+            flex: 1;
+            min-height: 0; /* Fix for Firefox flexbox issue */
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Specific chart positions and sizes */
+        .sales-by-country {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            height: 220px;
+        }
+        
+        .geographic-distribution {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            height: 220px;
+        }
+        
+        .peak-traffic-hours {
+            grid-column: 3 / 4;
+            grid-row: 1 / 3;
+            height: 500px; /* 220px + 220px + 15px gap */
+            width: 360px;
+        }
+        
+        .sales-trend {
+            grid-column: 1 / 3;
+            grid-row: 2 / 3;
+            height: 220px;
+        }
+        
+        /* Plotly dash container styling */
+        .dash-app-container {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        @media (max-width: 1200px) {
+            .metrics-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+            
+            .sales-by-country,
+            .geographic-distribution,
+            .peak-traffic-hours,
+            .sales-trend {
+                grid-column: 1 / 2;
+                grid-row: auto;
+                height: 300px;
+            }
+            
+            .peak-traffic-hours {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                height: auto;
+            }
+            
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Analytics</h2>
+        </div>
+        <ul class="nav-menu">
+            <li class="active">Page Engagement</li>
+            <li>User Journey</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Web Server Log Analytics Dashboard</h1>
+        
+            <form action="{% url 'upload_logs' %}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 8px;">
+                {% csrf_token %}
+                <input type="file" name="log_file" accept=".txt" required style="padding: 5px;">
+                <button type="submit" style="padding: 6px 12px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Upload Logs
+                </button>
+            </form>
+        </div>
+        {% if messages %}
+        <div style="margin-top: 10px;">
+            {% for message in messages %}
+                <div style="padding: 10px; border-radius: 4px; margin-bottom: 10px;
+                            {% if message.tags == 'success' %}
+                                background-color: #d4edda; color: #155724;
+                            {% elif message.tags == 'error' %}
+                                background-color: #f8d7da; color: #721c24;
+                            {% elif message.tags == 'warning' %}
+                                background-color: #fff3cd; color: #856404;
+                            {% else %}
+                                background-color: #e2e3e5; color: #383d41;
+                            {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+            
+        
+        <section class="section">
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <div class="metric-title">Daily Visitors</div>
+                    <div class="metric-value">4,532</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">Bounce Rate</div>
+                    <div class="metric-value">36%</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">Conversion Rate</div>
+                    <div class="metric-value">2.1%</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">Virtual Assistant Requests</div>
+                    <div class="metric-value">15%</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Visitor Analytics</h2>
+            
+            <div class="charts-container">
+                <!-- Box 1: Sales by Country -->
+                <div class="chart-item sales-by-country">
+                    <h3 class="chart-title">SALES BY COUNTRY</h3>
+                    <div class="chart-content">
+                        {% load plotly_dash %}
+                        {% plotly_app name="SalesByCountry" ratio=1 initial_arguments='{"config": {"responsive": true}}' %}
+                    </div>
+                </div>
+                
+                <!-- Box 2: Geographic Distribution -->
+                <div class="chart-item geographic-distribution">
+                    <h3 class="chart-title">GEOGRAPHIC DISTRIBUTION</h3>
+                    <div class="chart-content">
+                        {% plotly_app name="WebLogMap" ratio=1 %}
+                    </div>
+                </div>
+                
+                <!-- Box 3: Peak Traffic Hours (tall right column) -->
+                <div class="chart-item peak-traffic-hours">
+                    <h3 class="chart-title">PRODUCT SALES</h3>
+                    
+                        
+                    
+                </div>
+                
+                <!-- Box 4: Sales Trend (wide bottom) -->
+                <div class="chart-item sales-trend">
+                    <h3 class="chart-title">SALES TREND</h3>
+                    <div class="chart-content">
+                        {% plotly_app name="SalesTrend" ratio=1 %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

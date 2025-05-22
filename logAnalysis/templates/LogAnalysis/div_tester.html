@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Container Grid</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Creates 3 equal columns */
+            gap: 20px; /* Space between grid items */
+            padding: 20px;
+            border-color: black;
+        }
+        
+        .grid-item {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 0px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        
+        /* Optional: Responsive behavior */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr; /* Stack items on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <div class="grid-item">
+            <h2>Container 1</h2>
+            <p>Content for the first container goes here.</p>
+        </div>
+        
+        <div class="grid-item">
+            <h2>Container 2</h2>
+            <p>Content for the second container goes here.</p>
+        </div>
+        
+        <div class="grid-item" style="width: 700px;">
+            <h2>Container 3</h2>
+            <p>Content for the third container goes here.</p>
+        </div>
+    </div>
+</body>
+</html>

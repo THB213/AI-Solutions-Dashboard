@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sales Dashboard Layout</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e8f0ff;
+    }
+
+    .dashboard {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 150px;
+      background-color: #0b1c3d;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      height: 100%;
+    }
+
+    .sidebar h1 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      margin-bottom: 10px;
+      background-color: #e1e5f2;
+      color: black;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .top-row {
+      display: flex;
+      gap: 10px;
+      height: 100px;
+    }
+
+    .kpi {
+      flex: 1;
+      border: 2px dashed #b0c4de;
+      padding: 20px;
+      background-color: white;
+      text-align: center;
+    }
+
+    .middle-row {
+      display: flex;
+      gap: 10px;
+      height: 270px;
+    }
+
+.chart, .map {
+  flex: 1;
+  border: 2px dashed #b0c4de;
+  background-color: white;
+  padding: 0px;
+
+  height: 270px; /* ⬅️ Important */
+}
+
+    .bottom-row {
+      display: flex;
+      gap: 10px;
+      height: 270px;
+    }
+
+    .bottom-left, .bottom-middle, .bottom-right {
+      flex: 1;
+      border: 2px dashed #b0c4de;
+      background-color: white;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropdown {
+      margin-bottom: 20px;
+      height: 30px;
+    }
+
+    .dropdown label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .dropdown select {
+      width: 100%;
+      padding: 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h1>Adventure Works</h1>
+    <div class="dropdown">
+      <label for="year">Year</label>
+      <select id="year" name="year">
+        <option value="all">All</option>
+        {% for year in years %}
+          <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button>Overview</button>
+    <button>Product Analysis</button>
+    <button>Regional Analysis</button>
+    <button>Customer Analysis</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Top KPIs -->
+    <div class="top-row">
+      <div class="kpi">Total Sales</div>
+      <div class="kpi">Total Quantity</div>
+      <div class="kpi">Profit</div>
+      <div class="kpi">Profit %</div>
+    </div>
+
+    <!-- Middle Charts -->
+    <div class="middle-row">
+      <div class="chart">
+        {% load plotly_dash %}
+        {% plotly_app name="ProductAnalyticsChart" ratio=0.6 %}
+        </div>
+      <div class="chart">
+        {% plotly_app name="TrafficHistogram" ratio=1 %}
+      </div>
+    </div>
+    <!-- Bottom Charts -->
+    <div class="bottom-row">
+      <div class="bottom-left">
+        {% plotly_app name="SalesByCountry" ratio=1 initial_arguments='{"config": {"responsive": true}}' %}
+    </div>
+      <div class="bottom-middle">{% plotly_app name="ReferrerPieChart" ratio=1 %}</div>
+      <div class="bottom-right">{% plotly_app name="DailyAveragesChart" ratio=1 %}</div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const yearSelect = document.getElementById('year');
+    yearSelect.addEventListener('change', function() {
+      const event = new CustomEvent('dash-update', {
+        detail: {
+          year: yearSelect.value
+        }
+      });
+      document.dispatchEvent(event);
+    });
+  });
+</script>
+
+</body>
+</html>
+
